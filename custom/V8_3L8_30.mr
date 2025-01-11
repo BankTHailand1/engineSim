@@ -4,6 +4,7 @@ units units()
 constants constants()
 impulse_response_library ir_lib()
 label rot((2 * 360) * units.deg)
+label v_angle(30.0)
 
 private node wires {
     output wire1: ignition_wire();
@@ -133,9 +134,9 @@ public node customEngine {
         redline: 7400 * units.rpm,
         throttle_gamma: 2.0,
         fuel: fuel(
-            max_dilution_effect: 18.0,
-            burning_efficiency_randomness: 1.0,
-            max_burning_efficiency: 8.0
+            max_dilution_effect: 13.0,
+            burning_efficiency_randomness: 0.8,
+            max_burning_efficiency: 3.0
         ),
         hf_gain: 0.01,
         noise: 1.0,
@@ -164,7 +165,6 @@ public node customEngine {
         disk_moment_of_inertia(mass: 1 * units.kg, radius: 1.0 * units.cm)
     )
 
-    label v_angle(30 * units.deg)
     crankshaft c0(
         throw: stroke / 2,
         flywheel_mass: flywheel_mass,
@@ -174,17 +174,17 @@ public node customEngine {
             crank_moment + flywheel_moment + other_moment,
         position_x: 0.0,
         position_y: 0.0,
-        tdc: (90 - (v_angle / 2.0)) * units.deg
+        tdc: (90 - (v_angle / 2.0) * units.deg)
     )
 
-    rod_journal rj0(angle: 345 * units.deg)
-    rod_journal rj1(angle: 285 * units.deg)
-    rod_journal rj2(angle: 75 * units.deg)
-    rod_journal rj3(angle: 195 * units.deg)
-    rod_journal rj4(angle: 165 * units.deg)
-    rod_journal rj5(angle: 105 * units.deg)
-    rod_journal rj6(angle: 255 * units.deg)
-    rod_journal rj7(angle: 15 * units.deg)
+    rod_journal rj0(angle: (0.0 - (v_angle / 2.0)) * units.deg)
+    rod_journal rj1(angle: (270.0 + (v_angle / 2.0)) * units.deg)
+    rod_journal rj2(angle: (90.0 - (v_angle / 2.0)) * units.deg)
+    rod_journal rj3(angle: (180.0 + (v_angle / 2.0)) * units.deg)
+    rod_journal rj4(angle: (180.0 - (v_angle / 2.0)) * units.deg)
+    rod_journal rj5(angle: (90.0 + (v_angle / 2.0)) * units.deg)
+    rod_journal rj6(angle: (270.0 - (v_angle / 2.0)) * units.deg)
+    rod_journal rj7(angle: (0.0 + (v_angle / 2.0)) * units.deg)
     c0
         .add_rod_journal(rj0)
         .add_rod_journal(rj1)
@@ -219,7 +219,7 @@ public node customEngine {
         runner_flow_rate: k_carb(540.0),
         runner_length: 30.0 * units.cm,
         idle_flow_rate: k_carb(0.0),
-        idle_throttle_plate_position: 0.9974,
+        idle_throttle_plate_position: 0.9973,
         velocity_decay: 1.0
     )
 
@@ -251,8 +251,8 @@ public node customEngine {
 
     label spacing(4.0 * units.cm)
 
-    cylinder_bank b0(bank_params, angle: -v_angle / 2.0)
-    cylinder_bank b1(bank_params, angle: v_angle / 2.0)
+    cylinder_bank b0(bank_params, angle: (-v_angle / 2.0) * units.deg)
+    cylinder_bank b1(bank_params, angle: (v_angle / 2.0) * units.deg)
     b0
         .add_cylinder(
             piston: piston(piston_params, blowby: k_28inH2O(0.0)),
