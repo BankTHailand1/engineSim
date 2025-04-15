@@ -4,29 +4,29 @@ units units()
 constants constants()
 impulse_response_library ir_lib()
 
-private node wires { //etch wire for etch cylinder
+private node wires {
     output wire1: ignition_wire();
     output wire2: ignition_wire();
     output wire3: ignition_wire();
     output wire4: ignition_wire();
+    output wire5: ignition_wire();
+    output wire6: ignition_wire();
 }
 
 private node head {
     input intake_camshaft;
     input exhaust_camshaft;
-    input chamber_volume: 18 * units.cc; //this is chamber_volume of etch cylinder
+    input chamber_volume: 20 * units.cc;
     input intake_runner_volume: 150.0 * units.cc;
     input intake_runner_cross_section_area: 2.2 * units.inch * 2.2 * units.inch;
     input exhaust_runner_volume: 50.0 * units.cc;
     input exhaust_runner_cross_section_area: 1.5 * units.inch * 1.5 * units.inch;
 
-    //all 4 of this don't touch
     input flow_attenuation: 1.0;
     input lift_scale: 1.0;
     input flip_display: false;
     alias output __out: head;
 
-    //this can be mod but don't change it too much basicly i don't know about this point much
     function intake_flow(50 * units.thou)
     intake_flow
         .add_flow_sample(0 * lift_scale, 0 * flow_attenuation)
@@ -52,7 +52,6 @@ private node head {
         .add_flow_sample(400 * lift_scale, 245 * flow_attenuation)
         .add_flow_sample(450 * lift_scale, 246 * flow_attenuation)
 
-    //don't touch
     generic_cylinder_head head(
         chamber_volume: chamber_volume,
         intake_runner_volume: intake_runner_volume,
@@ -71,7 +70,6 @@ private node head {
 }
 
 private node cams {
-    //don't touch this zone
     input lobe_profile;
     input intake_lobe_profile: lobe_profile;
     input exhaust_lobe_profile: lobe_profile;
@@ -81,7 +79,6 @@ private node cams {
     input advance: 0 * units.deg; 
     input base_radius: 0.0 * units.inch;
 
-    //right here is telling u how much of head was like inline only need this zone but if u using V it need 2 set, simplely u can change the number
     output intake_cam: _intake_cam;
     output exhaust_cam: _exhaust_cam;
 
@@ -90,7 +87,6 @@ private node cams {
         base_radius: base_radius
     )
     
-    //this for etch cams profile like i said if u have single head it only need 2 profile one for intake and other for exhast
     camshaft _intake_cam(params, lobe_profile: intake_lobe_profile)
     camshaft _exhaust_cam(params, lobe_profile: exhaust_lobe_profile)
 
@@ -98,73 +94,53 @@ private node cams {
     label rot360(360 * units.deg)
 
     _exhaust_cam
-        .add_lobe((rot360 - exhaust_lobe_center) + (0.0 / 4.0) * rot)
-        .add_lobe((rot360 - exhaust_lobe_center) + (3.0 / 4.0) * rot)
-        .add_lobe((rot360 - exhaust_lobe_center) + (1.0 / 4.0) * rot)
-        .add_lobe((rot360 - exhaust_lobe_center) + (2.0 / 4.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (0.0 / 6.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (1.75 / 6.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (4.0 / 6.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (4.5 / 6.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (3.0 / 6.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (0.25 / 6.0) * rot)
 
     _intake_cam
-        .add_lobe(rot360 + intake_lobe_center + (0.0 / 4.0) * rot)
-        .add_lobe(rot360 + intake_lobe_center + (3.0 / 4.0) * rot)
-        .add_lobe(rot360 + intake_lobe_center + (1.0 / 4.0) * rot)
-        .add_lobe(rot360 + intake_lobe_center + (2.0 / 4.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (0.0 / 6.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (1.75 / 6.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (4.0 / 6.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (4.5 / 6.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (3.0 / 6.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (0.25 / 6.0) * rot)
 }
 
-private node turbulence_to_flame_speed_ratio { //well easy name for this is ur turbo
-    alias output __out:
-        function(5.0)
-            .add_sample(0.0, 1.25 * 100.0)
-            .add_sample(5.0, 1.5 * 95.0)
-            .add_sample(10.0, 1.75 * 80.0)
-            .add_sample(15.0, 2.0 * 85.0)
-            .add_sample(20.0, 2.0 * 70.0)
-            .add_sample(25.0, 2.0 * 75.0)
-            .add_sample(30.0, 2.0 * 70.0)
-            .add_sample(35.0, 2.0 * 65.0)
-            .add_sample(40.0, 2.0 * 65.0)
-            .add_sample(45.0, 2.0 * 60.0)
-            .add_sample(50.0, 2.0 * 60.0)
-            .add_sample(55.0, 2.0 * 60.0)
-            .add_sample(60.0, 2.0 * 55.0)
-            .add_sample(65.0, 2.0 * 55.0)
-            .add_sample(70.0, 2.0 * 55.0);
-}
-
-public node customEngine { //final parts it's Engine
+public node customEngine {
     alias output __out: engine;
 
     engine engine(
-        name: "I4 2L3", //name any u like
-        starter_torque: 600 * units.lb_ft, //if ur engine can't rotate while starting try add more number on this
-        starter_speed: 200 * units.rpm, //at this point can make ur engine go left or right by positive and negative number
-        redline: 11000 * units.rpm, //redline is showing how far ur engine can run, on dyno it will end at this rpm as well
-        throttle_gamma: 2.0, //really not matter
-        fuel: fuel(//over 1.0 still runable? yes, like i did
-            max_turbulence_effect: 4.00,
+        name: "I6 2L4 ODD FO",
+        starter_torque: 600 * units.lb_ft,
+        starter_speed: 200 * units.rpm,
+        redline: 7400 * units.rpm,
+        throttle_gamma: 2.0,
+        fuel: fuel(
             max_dilution_effect: 12.0,
             burning_efficiency_randomness: 1.0,
-            max_burning_efficiency: 4.0,
-            turbulence_to_flame_speed_ratio: turbulence_to_flame_speed_ratio() //this ur turbo
-        ),//for setup simulation
+            max_burning_efficiency: 4.0
+        ),
         hf_gain: 0.01,
         noise: 1.0,
         jitter: 0.6,
-        simulation_frequency: 10000 //this really import point if u can't run at high fps u can trun this down abit but not too much cuz this really effect the engine
+        simulation_frequency: 10000
     )
 
-    wires wires() //add wire to engine
+    wires wires()
 
-    //this for basic setup engine
     label stroke(80.0 * units.mm)
-    label bore(95.5 * units.mm)
-    label rod_length(stroke * 2.017)
+    label bore(64.8 * units.mm)
+    label rod_length(stroke * 1.885)
     label rod_mass(220 * units.g)
     label compression_height(1.0 * units.inch)
-    label crank_mass(18 * units.kg)
-    label flywheel_mass(8 * units.kg)
+    label crank_mass(10 * units.kg)
+    label flywheel_mass(6 * units.kg)
     label flywheel_radius(35 * units.cm)
 
-    //don't touch
     label crank_moment(
         1.5 * disk_moment_of_inertia(mass: crank_mass, radius: stroke)
     )
@@ -184,14 +160,15 @@ public node customEngine { //final parts it's Engine
             crank_moment + flywheel_moment + other_moment,
         position_x: 0.0,
         position_y: 0.0,
-        tdc: 90 * units.deg //yeah this number is where ur cylinder0 TDC was
+        tdc: 90 * units.deg
     )
 
-    //set the cranks
     rod_journal rj0(angle: 0 * units.deg)
-    rod_journal rj1(angle: 180 * units.deg)
-    rod_journal rj2(angle: 180 * units.deg)
-    rod_journal rj3(angle: 0 * units.deg)
+    rod_journal rj1(angle: 210 * units.deg)
+    rod_journal rj2(angle: 480 * units.deg)
+    rod_journal rj3(angle: 540 * units.deg)
+    rod_journal rj4(angle: 0 * units.deg)
+    rod_journal rj5(angle: 30 * units.deg)
 
     engine.add_crankshaft(c0)
 
@@ -200,46 +177,48 @@ public node customEngine { //final parts it's Engine
         .add_rod_journal(rj1)
         .add_rod_journal(rj2)
         .add_rod_journal(rj3)
+        .add_rod_journal(rj4)
+        .add_rod_journal(rj5)
 
-    piston_parameters piston_params( //piston setup
+    piston_parameters piston_params(
         mass: (80) * units.g,
         compression_height: compression_height,
         wrist_pin_position: 0.0,
         displacement: 0.0
     )
 
-    connecting_rod_parameters cr_params( //rod setup
+    connecting_rod_parameters cr_params(
         mass: rod_mass,
         moment_of_inertia: rod_moment_of_inertia(
             mass: rod_mass,
             length: rod_length
         ),
-        center_of_mass: 0.0, //don't touch
+        center_of_mass: 0.0,
         length: rod_length
     )
 
     intake intake( 
-        plenum_volume: 1.725 * units.L, //this number can't be lower than 1 but it can go higher
+        plenum_volume: 1.725 * units.L,
         plenum_cross_section_area: 20.0 * units.cm2, 
-        intake_flow_rate: k_carb(700.0), //really don't know about this number but even more number it's even smaller runner tube
-        runner_flow_rate: k_carb(540.0), //same as before one
-        runner_length: 19.0 * units.inch, //this how long ur runner tube was
+        intake_flow_rate: k_carb(700.0),
+        runner_flow_rate: k_carb(540.0),
+        runner_length: 20.0 * units.cm,
         idle_flow_rate: k_carb(0.0),
-        idle_throttle_plate_position: 0.9983, //if it can't idl run try change this number
-        velocity_decay: 1.0 //don't touch
+        idle_throttle_plate_position: 0.9986,
+        velocity_decay: 1.0
     )
 
-    exhaust_system_parameters es_params( //setup exaust system it's same as intake
+    exhaust_system_parameters es_params(
         outlet_flow_rate: k_carb(310.0),
         primary_tube_length: 38.0 * units.inch,
         primary_flow_rate: k_carb(270.0),
         velocity_decay: 1.0
     )
     
-    exhaust_system exhaust0( //etch pipe for etch cams that what it alike
+    exhaust_system exhaust0(
         es_params,
-        audio_volume: 8.0, //how lound ur engine was?
-        length: 220 * units.inch,
+        audio_volume: 2.0,
+        length: 280 * units.cm,
         impulse_response: ir_lib.default_0
 
     )
@@ -249,28 +228,17 @@ public node customEngine { //final parts it's Engine
         deck_height: stroke / 2 + rod_length + compression_height
     )
 
-    cylinder_bank b0(bank_params, angle: 0.0 * units.deg) //if u want an V engine or any type that need angle try to change the number
-    //if u want more bank just add more of this setup    
+    cylinder_bank b0(bank_params, angle: 0.0 * units.deg)    
     b0
         .add_cylinder(
             piston: piston(piston_params, blowby: k_28inH2O(0.0)),
             connecting_rod: connecting_rod(cr_params),
-            rod_journal: rj0, //the rod0 or u can call it cylinder1 u can use many on single rod as u'd like
-            intake: intake,
-            exhaust_system: exhaust0, //setup the ex-system don't forgot about it
-            ignition_wire: wires.wire1, //the wire for etch cylinder, like i said it can be use same wire as other
-            sound_attenuation: 1.0, //fell boring to old sound? change this number to any u'd like!
-            primary_length: 3.5 * units.cm //the runner length in cylinder-head 
-        )
-        .add_cylinder(
-            piston: piston(piston_params, blowby: k_28inH2O(0.0)),
-            connecting_rod: connecting_rod(cr_params),
-            rod_journal: rj2,
+            rod_journal: rj0,
             intake: intake,
             exhaust_system: exhaust0,
-            ignition_wire: wires.wire2,
-            sound_attenuation: 0.8,
-            primary_length: 3.5 * units.cm
+            ignition_wire: wires.wire1,
+            sound_attenuation: 0.4,
+            primary_length: 4.0 * units.cm 
         )
         .add_cylinder(
             piston: piston(piston_params, blowby: k_28inH2O(0.0)),
@@ -278,9 +246,19 @@ public node customEngine { //final parts it's Engine
             rod_journal: rj1,
             intake: intake,
             exhaust_system: exhaust0,
-            ignition_wire: wires.wire3,
+            ignition_wire: wires.wire2,
             sound_attenuation: 0.6,
-            primary_length: 3.5 * units.cm
+            primary_length: 4.0 * units.cm
+        )
+        .add_cylinder(
+            piston: piston(piston_params, blowby: k_28inH2O(0.0)),
+            connecting_rod: connecting_rod(cr_params),
+            rod_journal: rj2,
+            intake: intake,
+            exhaust_system: exhaust0,
+            ignition_wire: wires.wire3,
+            sound_attenuation: 0.7,
+            primary_length: 4.0 * units.cm
         )
         .add_cylinder(
             piston: piston(piston_params, blowby: k_28inH2O(0.0)),
@@ -289,25 +267,45 @@ public node customEngine { //final parts it's Engine
             intake: intake,
             exhaust_system: exhaust0,
             ignition_wire: wires.wire4,
+            sound_attenuation: 0.8,
+            primary_length: 4.0 * units.cm
+        )
+        .add_cylinder(
+            piston: piston(piston_params, blowby: k_28inH2O(0.0)),
+            connecting_rod: connecting_rod(cr_params),
+            rod_journal: rj4,
+            intake: intake,
+            exhaust_system: exhaust0,
+            ignition_wire: wires.wire5,
+            sound_attenuation: 0.65,
+            primary_length: 4.0 * units.cm
+        )
+        .add_cylinder(
+            piston: piston(piston_params, blowby: k_28inH2O(0.0)),
+            connecting_rod: connecting_rod(cr_params),
+            rod_journal: rj5,
+            intake: intake,
+            exhaust_system: exhaust0,
+            ignition_wire: wires.wire6,
             sound_attenuation: 0.5,
-            primary_length: 3.5 * units.cm
+            primary_length: 4.0 * units.cm
         )
         .set_cylinder_head(
             head(
                 intake_camshaft: camshaft.intake_cam,
                 exhaust_camshaft: camshaft.exhaust_cam,
                 flip_display: false,
-                flow_attenuation: 1.2 //this is how good ur flow was
+                flow_attenuation: 1.2
             )
         )
 
-    engine.add_cylinder_bank(b0) //add the bank to engine or u can call it engine-block
+    engine.add_cylinder_bank(b0)
 
     harmonic_cam_lobe intake_lobe(
         duration_at_50_thou: 234 * units.deg,
         gamma: 1.1,
-        lift: 551 * units.thou, //this show u how higth the valve lift was
-        steps: 256 //really not matter to change
+        lift: 551 * units.thou,
+        steps: 256
     )
 
     harmonic_cam_lobe exhaust_lobe(
@@ -324,67 +322,65 @@ public node customEngine { //final parts it's Engine
         exhaust_lobe_profile: exhaust_lobe,
         intake_lobe_center: 116 * units.deg,
         exhaust_lobe_center: 116 * units.deg,
-        base_radius: 1.0 * units.inch //this is how thick the cam was
+        base_radius: 1.0 * units.inch
     )
 
-    //firing curve more power at higth rpm? add more number even more torque at low rpm? even less the number
     function timing_curve(1000 * units.rpm)
     timing_curve
-        .add_sample(0000 * units.rpm, 12 * units.deg)
-        .add_sample(1000 * units.rpm, 12 * units.deg)
-        .add_sample(2000 * units.rpm, 18 * units.deg)
-        .add_sample(3000 * units.rpm, 25 * units.deg)
-        .add_sample(4000 * units.rpm, 32 * units.deg)
-        .add_sample(5000 * units.rpm, 38 * units.deg)
-        .add_sample(6000 * units.rpm, 40 * units.deg)
-        .add_sample(7000 * units.rpm, 40 * units.deg)
-        .add_sample(8000 * units.rpm, 40 * units.deg)
+        .add_sample(0000 * units.rpm, 26 * units.deg)
+        .add_sample(1000 * units.rpm, 33 * units.deg)
+        .add_sample(2000 * units.rpm, 38 * units.deg)
+        .add_sample(3000 * units.rpm, 40 * units.deg)
 
     ignition_module ignition_module(
         timing_curve: timing_curve, 
-        rev_limit: 14500 * units.rpm, // yes this is really rav-limit
-        limiter_duration: 0.05 //here is set the redline pause how long it will take
+        rev_limit: 8000 * units.rpm,
+        limiter_duration: 0.05
     )
     label cycle(2 * 360 * units.deg)
-    ignition_module //setup the timeing!
-            .connect_wire(wires.wire1,  (0.0 / 4.0) * cycle)
-            .connect_wire(wires.wire2,  (3.0 / 4.0) * cycle)
-            .connect_wire(wires.wire3,  (1.0 / 4.0) * cycle)
-            .connect_wire(wires.wire4,  (2.0 / 4.0) * cycle)
+    ignition_module
+            .connect_wire(wires.wire1,  (0.0 / 6.0) * cycle)
+            .connect_wire(wires.wire2,  (1.75 / 6.0) * cycle)
+            .connect_wire(wires.wire3,  (4.0 / 6.0) * cycle)
+            .connect_wire(wires.wire4,  (4.5 / 6.0) * cycle)
+            .connect_wire(wires.wire5,  (3.0 / 6.0) * cycle)
+            .connect_wire(wires.wire6,  (0.25 / 6.0) * cycle)
 
-    engine.add_ignition_module(ignition_module) //connect to engine
+    engine.add_ignition_module(ignition_module)
 }
 
-private node supra_vehicle {
+private node customVehicle {
     alias output __out:
         vehicle(
-            mass: 3400 * units.lb,
-            drag_coefficient: 0.4,
-            cross_sectional_area: (66 * units.inch) * (50 * units.inch),
-            diff_ratio: 3.15,
-            tire_radius: 10 * units.inch,
-            rolling_resistance: 500 * units.N
+            mass: 288.5 * units.kg,
+            drag_coefficient: 0.015,
+            cross_sectional_area: (2.25 * units.m) * (0.8 * units.m),
+            diff_ratio: 3.8,
+            tire_radius: 12 * units.inch,
+            rolling_resistance: 20 * units.Nm
         );
 }
 
-private node supra_transmission {
+private node customTransmission {
     alias output __out:
         transmission(
-            max_clutch_torque: 1800 * units.Nm //if u slip too much try add more number
+            max_clutch_torque: 880 * units.Nm
         )
         .add_gear(5.25)
-        .add_gear(3.36)
-        .add_gear(2.17)
-        .add_gear(1.72)
-        .add_gear(1.32)
-        .add_gear(1.0);
+        .add_gear(3.0)
+        .add_gear(1.92)
+        .add_gear(1.41)
+        .add_gear(1.13)
+        .add_gear(0.9)
+        .add_gear(0.75)
+        .add_gear(0.60);
 }
 
-public node main { //don't add can't run
+public node main {
     run(
-        engine: customEngine(), //set engine
-        transmission: supra_transmission(),
-        vehicle: supra_vehicle()
+        engine: customEngine(),
+        transmission: customTransmission(),
+        vehicle: customVehicle()
     )
 }
 

@@ -99,15 +99,15 @@ private node cams {
 
     _exhaust_cam
         .add_lobe((rot360 - exhaust_lobe_center) + (0.0 / 4.0) * rot)
-        .add_lobe((rot360 - exhaust_lobe_center) + (3.0 / 4.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (1.5 / 4.0) * rot)
+        .add_lobe((rot360 - exhaust_lobe_center) + (2.5 / 4.0) * rot)
         .add_lobe((rot360 - exhaust_lobe_center) + (1.0 / 4.0) * rot)
-        .add_lobe((rot360 - exhaust_lobe_center) + (2.0 / 4.0) * rot)
 
     _intake_cam
         .add_lobe(rot360 + intake_lobe_center + (0.0 / 4.0) * rot)
-        .add_lobe(rot360 + intake_lobe_center + (3.0 / 4.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (1.5 / 4.0) * rot)
+        .add_lobe(rot360 + intake_lobe_center + (2.5 / 4.0) * rot)
         .add_lobe(rot360 + intake_lobe_center + (1.0 / 4.0) * rot)
-        .add_lobe(rot360 + intake_lobe_center + (2.0 / 4.0) * rot)
 }
 
 private node turbulence_to_flame_speed_ratio { //well easy name for this is ur turbo
@@ -137,14 +137,14 @@ public node customEngine { //final parts it's Engine
         name: "I4 2L3", //name any u like
         starter_torque: 600 * units.lb_ft, //if ur engine can't rotate while starting try add more number on this
         starter_speed: 200 * units.rpm, //at this point can make ur engine go left or right by positive and negative number
-        redline: 11000 * units.rpm, //redline is showing how far ur engine can run, on dyno it will end at this rpm as well
+        redline: 10000 * units.rpm, //redline is showing how far ur engine can run, on dyno it will end at this rpm as well
         throttle_gamma: 2.0, //really not matter
         fuel: fuel(//over 1.0 still runable? yes, like i did
             max_turbulence_effect: 4.00,
             max_dilution_effect: 12.0,
             burning_efficiency_randomness: 1.0,
-            max_burning_efficiency: 4.0,
-            turbulence_to_flame_speed_ratio: turbulence_to_flame_speed_ratio() //this ur turbo
+            max_burning_efficiency: 4.0/*,
+            turbulence_to_flame_speed_ratio: turbulence_to_flame_speed_ratio()*/ //this ur turbo
         ),//for setup simulation
         hf_gain: 0.01,
         noise: 1.0,
@@ -155,13 +155,13 @@ public node customEngine { //final parts it's Engine
     wires wires() //add wire to engine
 
     //this for basic setup engine
-    label stroke(80.0 * units.mm)
-    label bore(95.5 * units.mm)
-    label rod_length(stroke * 2.017)
+    label stroke(54.1 * units.mm)
+    label bore(86.5 * units.mm)
+    label rod_length(stroke * 3.017)
     label rod_mass(220 * units.g)
     label compression_height(1.0 * units.inch)
-    label crank_mass(18 * units.kg)
-    label flywheel_mass(8 * units.kg)
+    label crank_mass(4.33 * units.kg)
+    label flywheel_mass(3 * units.kg)
     label flywheel_radius(35 * units.cm)
 
     //don't touch
@@ -189,9 +189,9 @@ public node customEngine { //final parts it's Engine
 
     //set the cranks
     rod_journal rj0(angle: 0 * units.deg)
-    rod_journal rj1(angle: 180 * units.deg)
-    rod_journal rj2(angle: 180 * units.deg)
-    rod_journal rj3(angle: 0 * units.deg)
+    rod_journal rj1(angle: 90 * units.deg)
+    rod_journal rj2(angle: 270 * units.deg)
+    rod_journal rj3(angle: 180 * units.deg)
 
     engine.add_crankshaft(c0)
 
@@ -269,7 +269,7 @@ public node customEngine { //final parts it's Engine
             intake: intake,
             exhaust_system: exhaust0,
             ignition_wire: wires.wire2,
-            sound_attenuation: 0.8,
+            sound_attenuation: 0.4,
             primary_length: 3.5 * units.cm
         )
         .add_cylinder(
@@ -279,7 +279,7 @@ public node customEngine { //final parts it's Engine
             intake: intake,
             exhaust_system: exhaust0,
             ignition_wire: wires.wire3,
-            sound_attenuation: 0.6,
+            sound_attenuation: 0.7,
             primary_length: 3.5 * units.cm
         )
         .add_cylinder(
@@ -289,7 +289,7 @@ public node customEngine { //final parts it's Engine
             intake: intake,
             exhaust_system: exhaust0,
             ignition_wire: wires.wire4,
-            sound_attenuation: 0.5,
+            sound_attenuation: 0.3,
             primary_length: 3.5 * units.cm
         )
         .set_cylinder_head(
@@ -342,15 +342,15 @@ public node customEngine { //final parts it's Engine
 
     ignition_module ignition_module(
         timing_curve: timing_curve, 
-        rev_limit: 14500 * units.rpm, // yes this is really rav-limit
+        rev_limit: 14000 * units.rpm, // yes this is really rav-limit
         limiter_duration: 0.05 //here is set the redline pause how long it will take
     )
     label cycle(2 * 360 * units.deg)
     ignition_module //setup the timeing!
             .connect_wire(wires.wire1,  (0.0 / 4.0) * cycle)
-            .connect_wire(wires.wire2,  (3.0 / 4.0) * cycle)
-            .connect_wire(wires.wire3,  (1.0 / 4.0) * cycle)
-            .connect_wire(wires.wire4,  (2.0 / 4.0) * cycle)
+            .connect_wire(wires.wire2,  (1.5 / 4.0) * cycle)
+            .connect_wire(wires.wire3,  (2.5 / 4.0) * cycle)
+            .connect_wire(wires.wire4,  (1.0 / 4.0) * cycle)
 
     engine.add_ignition_module(ignition_module) //connect to engine
 }
@@ -358,12 +358,12 @@ public node customEngine { //final parts it's Engine
 private node supra_vehicle {
     alias output __out:
         vehicle(
-            mass: 3400 * units.lb,
+            mass: 280 * units.lb,
             drag_coefficient: 0.4,
             cross_sectional_area: (66 * units.inch) * (50 * units.inch),
-            diff_ratio: 3.15,
-            tire_radius: 10 * units.inch,
-            rolling_resistance: 500 * units.N
+            diff_ratio: 3.335,
+            tire_radius: (18 / 2) * units.inch,
+            rolling_resistance: 20 * units.N
         );
 }
 
@@ -372,12 +372,11 @@ private node supra_transmission {
         transmission(
             max_clutch_torque: 1800 * units.Nm //if u slip too much try add more number
         )
-        .add_gear(5.25)
         .add_gear(3.36)
-        .add_gear(2.17)
-        .add_gear(1.72)
-        .add_gear(1.32)
-        .add_gear(1.0);
+        .add_gear(2.13)
+        .add_gear(1.62)
+        .add_gear(1.35)
+        .add_gear(1.11);
 }
 
 public node main { //don't add can't run
