@@ -15,3 +15,6 @@ what? stil error? NP cuz i already know u woulld say so cuz i'm just too lazy to
 
 here is 2nd step of adding new unit fitst u need go to "/es/constants/units.mr" and open it and add new line of code like this:
 ![Screenshot from 2025-04-29 21-06-16(modified)](https://github.com/user-attachments/assets/7a8667cc-8bc9-4b77-b0f0-9a97f74ab870)
+
+and now u have it the newly unit type and more fun in makeing new engine!
+u may ask how to use it, well i'm not gonna tell u just take a look inside my code and process it by urself (use some brain and don't be air head like me)
