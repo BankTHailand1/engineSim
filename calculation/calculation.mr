@@ -28,3 +28,10 @@ public node rod_mass_calculation {
     input materials_remain;
     alias output __mass: ((hollow_cyinder_calculatrion(inner_cylinder: piston_pin_size, outter_cylinder: (piston_pin_size * 1.115), thiccness: thiccness) + (length * thiccness * rod_size) + hollow_cyinder_calculatrion(inner_cylinder: crank_pin_size, outter_cylinder: (piston_pin_size * 1.33), thiccness: thiccness) * material) * materials_remain);
 }
+
+public node compress_ratio_calculation {
+    input bore;
+    input stroke;
+    input ratio;
+    alias output __cc: ((constants.pi * bore * stroke) / (ratio - 1));
+}
