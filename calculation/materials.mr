@@ -1,0 +1,17 @@
+private import "engine_sim.mr"
+
+private import "../types/atomic_types.mr"
+private import "../types/conversions.mr"
+private import "../constants/units.mr"
+
+units units()
+public node materials {
+    output W: 19.25 * units.g_cc;
+    output Al: 2.70 * units.g_cc;
+    output Fe: 7.85 * units.g_cc;
+    output Ti: 4.51 * units.g_cc;
+    output CF:  1.6 * units.g_cc;
+    output C:   1.9 * units.g_cc;
+    output Mg: 1.74 * units.g_cc;
+    output U:  19.1 * units.g_cc;
+}

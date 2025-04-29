@@ -1,0 +1,30 @@
+private import "engine_sim.mr"
+
+private import "../constants/constants.mr"
+
+constants constants()
+public node piston_mass_calculation {
+    input material;
+    input bore;
+    input pis_height;
+    input materials_remain;
+    alias output __mass: (((constants.pi * bore * pis_height) * material) * materials_remain);
+}
+
+private node hollow_cyinder_calculatrion {
+    input inner_cylinder;
+    input outter_cylinder;
+    input thiccness;
+    alias output __mass: ((constants.pi * inner_cylinder * thiccness) - (constants.pi * outter_cylinder * thiccness));
+}
+
+public node rod_mass_calculation {
+    input material;
+    input length;
+    input piston_pin_size;
+    input crank_pin_size;
+    input rod_size;
+    input thiccness;
+    input materials_remain;
+    alias output __mass: ((hollow_cyinder_calculatrion(inner_cylinder: piston_pin_size, outter_cylinder: (piston_pin_size * 1.115), thiccness: thiccness) + (length * thiccness * rod_size) + hollow_cyinder_calculatrion(inner_cylinder: crank_pin_size, outter_cylinder: (piston_pin_size * 1.33), thiccness: thiccness) * material) * materials_remain);
+}
