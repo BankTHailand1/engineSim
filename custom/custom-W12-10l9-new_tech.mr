@@ -23,7 +23,7 @@ private node wires {
 private node head {
     input intake_camshaft;
     input exhaust_camshaft;
-    input chamber_volume: 75 * units.cc;
+    input chamber_volume: compress_ratio_calculation(bore: 12.0 * units.cm2, stroke: 7.95 * units.cm, ratio: 12.9);
     input intake_runner_volume: 280.0 * units.cc;
     input intake_runner_cross_section_area: 110 * units.mm * 80 * units.mm;
     input exhaust_runner_volume: 80.0 * units.cc;
