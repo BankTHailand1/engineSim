@@ -116,10 +116,10 @@ public node customEngine {
     alias output __out: engine;
 
     engine engine(
-        name: "I6 10L6",
+        name: "I6 10L6 BB",
         starter_torque: 800 * units.lb_ft,
         starter_speed: 200 * units.rpm,
-        redline: 4300 * units.rpm,
+        redline: 8600 * units.rpm,
         throttle_gamma: 2.0,
         fuel: fuel(
             max_dilution_effect: 12.0,
@@ -134,14 +134,14 @@ public node customEngine {
 
     wires wires()
 
-    label stroke(185.8 * units.mm)
-    label bore(110.0 * units.mm)
+    label stroke(98.0 * units.mm)
+    label bore(150.0 * units.mm)
     label rod_length(stroke * 2.375)
-    label rod_mass(880 * units.g)
+    label rod_mass(420.0 * units.g)
     label compression_height(2.5 * units.inch)
-    label crank_mass(30 * units.kg)
-    label flywheel_mass(18.5 * units.kg)
-    label flywheel_radius(30 * units.cm)
+    label crank_mass(20.0 * units.kg)
+    label flywheel_mass(22.0 * units.kg)
+    label flywheel_radius(30.0 * units.cm)
 
     label crank_moment(
         1.5 * disk_moment_of_inertia(mass: crank_mass, radius: stroke)
@@ -329,10 +329,13 @@ public node customEngine {
 
     function timing_curve(1000 * units.rpm)
     timing_curve
-        .add_sample(0000 * units.rpm, 10 * units.deg)
-        .add_sample(1000 * units.rpm, 15 * units.deg)
-        .add_sample(2000 * units.rpm, 19 * units.deg)
-        .add_sample(3000 * units.rpm, 22 * units.deg)
+        .add_sample(0000 * units.rpm, 20 * units.deg)
+        .add_sample(1000 * units.rpm, 20 * units.deg)
+        .add_sample(2000 * units.rpm, 27 * units.deg)
+        .add_sample(3000 * units.rpm, 33 * units.deg)
+        .add_sample(4000 * units.rpm, 39 * units.deg)
+        .add_sample(5000 * units.rpm, 45 * units.deg)
+        .add_sample(6000 * units.rpm, 48 * units.deg)
 
     ignition_module ignition_module(
         timing_curve: timing_curve, 
