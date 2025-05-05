@@ -3,35 +3,77 @@ private import "engine_sim.mr"
 private import "../constants/constants.mr"
 
 constants constants()
+// Simple Shaped Math for 3D part
+private node cylinder_calculation {
+    input diameter;
+    input thickness;
+    alias output __cylinder: ((constants.pi / 4.0) * (diameter * diameter) * thickness);
+}
+
+private node hollow_cylinder_calculation {
+    input inner_diameter;
+    input outter_diameter;
+    input thickness;
+    alias output __mass: (cylinder_calculation(diameter: outter_diameter, thickness: thickness) - cylinder_calculation(diameter: inner_diameter, thickness: thickness));
+}
+
+private node cube_calculation {
+    input base;
+    input height;
+    input thickness;
+    alias output __cc: (base * height * thickness);
+}
+
+// Doing Real Math
 public node piston_mass_calculation {
     input material;
     input bore;
+    input pin_size;
     input pis_height;
     input materials_remain;
-    alias output __mass: (((constants.pi * bore * pis_height) * material) * materials_remain);
-}
-
-private node hollow_cyinder_calculatrion {
-    input inner_cylinder;
-    input outter_cylinder;
-    input thiccness;
-    alias output __mass: ((constants.pi * inner_cylinder * thiccness) - (constants.pi * outter_cylinder * thiccness));
+    alias output __mass: (((cylinder_calculation(diameter: bore, thickness: pis_height) - cylinder_calculation(diameter: pin_size, thickness: bore)) * material) * materials_remain);
 }
 
 public node rod_mass_calculation {
+    input piston_pin_diameter; 
+    input crank_pin_diameter;
+    input rod_length; // Y axle
+    input rod_thickness; // X axle
+    input rod_dept; // Z axle
     input material;
-    input length;
-    input piston_pin_size;
-    input crank_pin_size;
-    input rod_size;
-    input thiccness;
     input materials_remain;
-    alias output __mass: ((hollow_cyinder_calculatrion(inner_cylinder: piston_pin_size, outter_cylinder: (piston_pin_size * 1.115), thiccness: thiccness) + (length * thiccness * rod_size) + hollow_cyinder_calculatrion(inner_cylinder: crank_pin_size, outter_cylinder: (piston_pin_size * 1.33), thiccness: thiccness) * material) * materials_remain);
+    alias output __mass: ((((hollow_cylinder_calculation(inner_diameter: crank_pin_diameter, outter_diameter: crank_pin_diameter * 1.25, thickness: rod_dept) + hollow_cylinder_calculation(inner_diameter: piston_pin_diameter, outter_diameter: piston_pin_diameter * 1.1, thickness: rod_dept)) + cube_calculation(base: rod_thickness, height: rod_length, thickness: rod_dept)) * material) * materials_remain);
 }
 
 public node compress_ratio_calculation {
     input bore;
     input stroke;
     input ratio;
-    alias output __cc: ((constants.pi * bore * stroke) / (ratio - 1));
+    alias output __cc: (cylinder_calculation(diameter: bore, thickness: stroke) / (ratio - 1));
+}
+
+public node flywheel_mass_calculation {
+    input diameter;
+    input thickness;
+    input material;
+    input materials_remain;
+    alias output __mass: ((cylinder_calculation(diameter: diameter, thickness: thickness) * material) * materials_remain);
+}
+
+private node crank_spacer_calculation {
+    input stroke;
+    input crank_pin_diameter;
+    input spacer;
+    alias output __spacer: ((0.5 * cylinder_calculation(diameter: crank_pin_diameter, thickness: spacer)) + cube_calculation(base: crank_pin_diameter, height: stroke / 2.0, thickness: spacer) + cube_calculation(base: stroke - crank_pin_diameter, height: stroke / 2.0, thickness: spacer) + cylinder_calculation(diameter: stroke, thickness: spacer));
+}
+
+public node crank_mass_calculation {
+    input stroke;
+    input all_crank_pin_crank_holder;
+    input crank_pin_diameter;
+    input crank_pin_length;
+    input spacer;
+    input material;
+    input materials_remain;
+    alias output __mass: ((((cylinder_calculation(diameter: crank_pin_diameter, thickness: crank_pin_length) * all_crank_pin_crank_holder) + (crank_spacer_calculation(stroke: stroke, crank_pin_diameter: crank_pin_diameter, spacer: spacer) * ((all_crank_pin_crank_holder / 2.0) + 0.5))) * material) * materials_remain);
 }
