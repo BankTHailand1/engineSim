@@ -23,7 +23,7 @@ private node wires {
 private node head {
     input intake_camshaft;
     input exhaust_camshaft;
-    input chamber_volume: compress_ratio_calculation(bore: 12.0 * units.cm2, stroke: 7.95 * units.cm, ratio: 12.9);
+    input chamber_volume: compress_ratio_calculation(bore: 120.5 * units.mm, stroke: 79.5 * units.mm, ratio: 12.8);
     input intake_runner_volume: 280.0 * units.cc;
     input intake_runner_cross_section_area: 110 * units.mm * 80 * units.mm;
     input exhaust_runner_volume: 80.0 * units.cc;
@@ -192,7 +192,7 @@ public node customEngine {
         hf_gain: 0.01,
         noise: 1.0,
         jitter: 0.6,
-        simulation_frequency: 8000
+        simulation_frequency: 5000
     )
 
     wires wires()
@@ -200,11 +200,25 @@ public node customEngine {
     label stroke(79.5 * units.mm)
     label bore(120.5 * units.mm)
     label rod_length(200 * units.mm)
-    label rod_mass( //New funtion & value that i create on my own
-        rod_mass_calculation(material: materials.CF, length: rod_length * units.cm, piston_pin_size: 2.4 * units.cm, rod_size: 2.85 * units.cm, crank_pin_size: 4.0 * units.cm, thiccness: 1.15 * units.cm, materials_remain: 0.82)
+    label rod_mass(
+        rod_mass_calculation(
+            piston_pin_diameter: 24.0 * units.mm,
+            crank_pin_diameter: 34.0 * units.mm,
+            rod_length: rod_length,
+            rod_thickness: 22 * units.mm,
+            rod_dept: 10 * units.mm,
+            material: materials.Al,
+            materials_remain: 0.78
+        )
     )
-    label pis_mass( //New funtion & value that i create on my own
-        piston_mass_calculation(material: materials.Fe, bore: 12.05 * units.cm2, pis_height: 4.78 * units.cm, materials_remain: 0.55)
+    label pis_mass(
+        piston_mass_calculation(
+            bore: bore,
+            pin_size: 24.0 * units.mm,
+            pis_height: 40 * units.mm,
+            material: materials.Fe,
+            materials_remain: 0.30
+        )
     )
     label compression_height(14.5 * units.mm)
     label crank_mass(10.5 * units.kg)
